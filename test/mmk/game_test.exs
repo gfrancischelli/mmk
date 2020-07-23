@@ -8,10 +8,10 @@ defmodule GameTest do
     assert %{alpha: 0} = game.current_player
   end
 
-  test "guessing a word wrong will do nothing" do
+  test "guessing a word wrong will mark last guess as wrong" do
     game = build_game()
 
-    assert Game.guess_word(game, "x") == game
+    assert Game.guess_word(game, "x") == %Game{game | last_guess: :incorrect}
   end
 
   test "select_random_word advances to a next random word when available" do

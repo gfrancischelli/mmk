@@ -1,5 +1,5 @@
 defmodule Mmk.Core.Game do
-  defstruct ~w[score current_stage teams current_team current_player words word_pool current_word winner]a
+  defstruct ~w[score current_stage teams current_team current_player words word_pool current_word winner last_guess]a
 
   alias Mmk.Core.{Game, Score}
 
@@ -16,6 +16,7 @@ defmodule Mmk.Core.Game do
       word_pool: MapSet.new(words),
       current_word: current_word,
       current_stage: :many_words,
+      last_guess: nil,
       score: %{one_word: Score.new(), mimic: Score.new(), many_words: Score.new()}
     }
   end
@@ -23,10 +24,14 @@ defmodule Mmk.Core.Game do
   def guess_word(%Game{current_word: word} = game, guess) when guess == word,
     do: guess_right(game)
 
-  def guess_word(game, _word), do: game
+  def guess_word(game, _word) do
+    game
+    |> Map.put(:last_guess, :incorrect)
+  end
 
   defp guess_right(game) do
     game
+    |> Map.put(:last_guess, :correct)
     |> move_current_word_to_score()
     |> next_player()
     |> select_random_word()
@@ -58,6 +63,7 @@ defmodule Mmk.Core.Game do
       end
 
     game
+    |> Map.put(:last_guess, nil)
     |> Map.put(:current_stage, stage)
     |> Map.put(:words, game.word_pool)
     |> reset_words()
