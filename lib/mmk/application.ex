@@ -7,6 +7,8 @@ defmodule Mmk.Application do
 
   def start(_type, _args) do
     children = [
+      {Registry, keys: :unique, name: Mmk.GameRegistry},
+      Mmk.Boundary.GameSupervisor,
       # Start the Ecto repository
       Mmk.Repo,
       # Start the Telemetry supervisor
